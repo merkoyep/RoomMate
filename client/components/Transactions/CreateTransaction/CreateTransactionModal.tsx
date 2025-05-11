@@ -5,6 +5,7 @@ import CreateTransactionNavbar from './CreateTransactionNavbarContainer';
 import CreateTransactionFormComponent from './CreateTransactionFormComponent';
 import { clearTransactionForm } from '../../../redux/store/transactionFormSlice';
 import { useSubmitTransaction } from './useSubmitTransaction';
+import { triggerRefresh } from '../../../redux/store/transactionSlice';
 
 const CreateTransactionModal = ({ onClose }: { onClose: () => void }) => {
   const step = useSelector((state: any) => state.createTransaction.step);
@@ -20,6 +21,7 @@ const CreateTransactionModal = ({ onClose }: { onClose: () => void }) => {
   const handleSubmit = async () => {
     try {
       await submitTransaction();
+      dispatch(triggerRefresh());
       handleClose();
     } catch (error) {
       console.error(error);

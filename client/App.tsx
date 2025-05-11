@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import Dashboard from './screens/Dashboard';
 import Login from './screens/Login';
 import { Provider } from 'react-redux';
@@ -65,5 +65,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

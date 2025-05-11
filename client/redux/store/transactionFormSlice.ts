@@ -7,7 +7,7 @@ interface Split {
 
 export interface TransactionFormSliceState {
   title: string;
-  amount: number;
+  amount: string;
   type: string;
   category: string;
   paidBy: string;
@@ -18,7 +18,7 @@ export interface TransactionFormSliceState {
 
 const initialState: TransactionFormSliceState = {
   title: '',
-  amount: 0,
+  amount: '',
   type: '',
   category: '',
   paidBy: '',

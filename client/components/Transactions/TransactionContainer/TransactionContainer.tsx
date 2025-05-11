@@ -1,28 +1,14 @@
 import { View, ScrollView, Text } from 'react-native';
 import TransactionRow from './TransactionRow';
 import { Transaction } from '../CreateTransaction/CreateTransactionFormComponent';
-import { useGetTransactions } from './useGetTransactions';
+import { useSelector } from 'react-redux';
 
 const TransactionContainer = () => {
-  const { data, loading, error } = useGetTransactions();
+  const transactions = useSelector(
+    (state: any) => state.transactions.transactions
+  );
 
-  if (loading) {
-    return (
-      <View className='flex-1 items-center justify-center'>
-        <Text>Loading transactions...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View className='flex-1 items-center justify-center'>
-        <Text>Error loading transactions: {error.message}</Text>
-      </View>
-    );
-  }
-
-  if (!data?.getTransactions) {
+  if (!transactions || transactions.length === 0) {
     return (
       <View className='flex-1 items-center justify-center'>
         <Text>No transactions found</Text>
@@ -33,7 +19,7 @@ const TransactionContainer = () => {
   return (
     <View className='flex-1 bg-white'>
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        {data.getTransactions.map((transaction: Transaction) => (
+        {transactions.map((transaction: Transaction) => (
           <TransactionRow key={transaction.id} transaction={transaction} />
         ))}
       </ScrollView>

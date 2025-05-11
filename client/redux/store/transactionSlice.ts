@@ -1,57 +1,67 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface TransactionFormSliceState {
+interface Transaction {
+  id: string;
   title: string;
   amount: number;
   type: string;
   category: string;
-  paidBy: string;
-  split: number[];
-  description: string;
+  paidBy: {
+    id: string;
+    username: string;
+  };
+  splits: {
+    userId: string;
+    percent: number;
+    value: number;
+  }[];
   createdAt: string;
 }
 
-const initialState: TransactionFormSliceState = {
-  title: '',
-  amount: 0,
-  type: '',
-  category: '',
-  paidBy: '',
-  split: [],
-  description: '',
-  createdAt: '',
+interface TransactionState {
+  transactions: Transaction[];
+  refreshTrigger: number;
+}
+
+const initialState: TransactionState = {
+  transactions: [],
+  refreshTrigger: 0,
 };
 
-const transactionFormSlice = createSlice({
-  name: 'transactionForm',
+const transactionSlice = createSlice({
+  name: 'transactions',
   initialState,
   reducers: {
-    setTitle: (state, action) => {
-      state.title = action.payload;
+    setTransactions: (state, action: PayloadAction<Transaction[]>) => {
+      state.transactions = action.payload;
     },
-    setAmount: (state, action) => {
-      state.amount = action.payload;
+    addTransaction: (state, action: PayloadAction<Transaction>) => {
+      state.transactions.push(action.payload);
     },
-    setType: (state, action) => {
-      state.type = action.payload;
+    updateTransaction: (state, action: PayloadAction<Transaction>) => {
+      const index = state.transactions.findIndex(
+        (t) => t.id === action.payload.id
+      );
+      if (index !== -1) {
+        state.transactions[index] = action.payload;
+      }
     },
-    setCategory: (state, action) => {
-      state.category = action.payload;
+    deleteTransaction: (state, action: PayloadAction<string>) => {
+      state.transactions = state.transactions.filter(
+        (t) => t.id !== action.payload
+      );
     },
-    setPaidBy: (state, action) => {
-      state.paidBy = action.payload;
-    },
-    setSplit: (state, action) => {
-      state.split = action.payload;
-    },
-    setDescription: (state, action) => {
-      state.description = action.payload;
-    },
-    setCreatedAt: (state, action) => {
-      state.createdAt = action.payload;
+    triggerRefresh: (state) => {
+      state.refreshTrigger += 1;
     },
   },
 });
 
-export const { setTitle } = transactionFormSlice.actions;
-export default transactionFormSlice.reducer;
+export const {
+  setTransactions,
+  addTransaction,
+  updateTransaction,
+  deleteTransaction,
+  triggerRefresh,
+} = transactionSlice.actions;
+export default transactionSlice.reducer;

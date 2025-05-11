@@ -20,23 +20,31 @@ import { useQuery } from '@apollo/client';
 import { GET_CATEGORIES, GET_USERS } from '../../../graphql/queries';
 import FormPicker from './Picker';
 
+interface User {
+  id: string;
+  username: string;
+}
+
+interface Split {
+  percent: string;
+  value: string;
+}
+
 export type Transaction = {
   id: string;
   title: string;
   type: string;
   description: string;
   category: string;
-  amount: number;
-  splits: { [key: string]: { percent: number; value: number } };
-  paidBy: string;
+  amount: string;
+  splits: { [key: string]: Split };
+  paidBy: User;
   createdAt: string;
 };
 
 const CreateTransactionFormComponent = ({ step }: { step: number }) => {
   const dispatch = useDispatch();
-  const transactionForm: Transaction = useSelector(
-    (state: any) => state.transactionForm
-  );
+  const transactionForm = useSelector((state: any) => state.transactionForm);
   const { data, loading, error } = useQuery(GET_USERS);
   const {
     data: categoryData,
@@ -55,7 +63,7 @@ const CreateTransactionFormComponent = ({ step }: { step: number }) => {
   }, [step]);
 
   useEffect(() => {
-    const amount = Number(transactionForm.amount) || 0;
+    const amount = parseFloat(transactionForm.amount) || 0;
     Object.entries(transactionForm.splits).forEach(
       ([userId, split]: [string, any]) => {
         const percentNum = Number(split.percent) || 0;
@@ -66,14 +74,14 @@ const CreateTransactionFormComponent = ({ step }: { step: number }) => {
   }, [transactionForm.amount]);
 
   const handlePercentChange = (userId: string, percent: string) => {
-    const amount = Number(transactionForm.amount) || 0;
+    const amount = parseFloat(transactionForm.amount) || 0;
     const percentNum = Number(percent) || 0;
     const value = amount ? ((percentNum / 100) * amount).toFixed(2) : '';
     dispatch(setSplit({ userId, split: { percent, value } }));
   };
 
   const handleValueChange = (userId: string, value: string) => {
-    const amount = Number(transactionForm.amount) || 0;
+    const amount = parseFloat(transactionForm.amount) || 0;
     const valueNum = Number(value) || 0;
     const percent = amount ? ((valueNum / amount) * 100).toFixed(2) : '';
     dispatch(setSplit({ userId, split: { percent, value } }));
@@ -194,15 +202,12 @@ const CreateTransactionFormComponent = ({ step }: { step: number }) => {
               <Text className='text-base mr-1 pr-2'>$</Text>
               <TextInput
                 placeholder='0.00'
-                value={
-                  transactionForm.amount
-                    ? transactionForm.amount.toString()
-                    : ''
-                }
-                keyboardType='numeric'
+                value={transactionForm.amount}
+                keyboardType='decimal-pad'
                 onChangeText={(text: string) => {
-                  const numericValue = text === '' ? 0 : Number(text);
-                  dispatch(setField({ field: 'amount', value: numericValue }));
+                  if (text === '' || /^\d*\.?\d*$/.test(text)) {
+                    dispatch(setField({ field: 'amount', value: text }));
+                  }
                 }}
               />
             </View>
@@ -276,8 +281,9 @@ const CreateTransactionFormComponent = ({ step }: { step: number }) => {
             <Text className='text-xl font-semibold pt-3'>Amount</Text>
             <Text className='text-base'>${transactionForm.amount}</Text>
             <Text className='text-xl font-semibold pt-3'>Splits</Text>
-            {Object.entries(transactionForm.splits).map(
-              ([userId, split]: [string, any]) => (
+            {Object.entries(transactionForm.splits).map(([userId, split]) => {
+              const splitObj = split as Split;
+              return (
                 <View
                   key={userId}
                   className='flex flex-row justify-between py-1'
@@ -286,11 +292,11 @@ const CreateTransactionFormComponent = ({ step }: { step: number }) => {
                     {users.find((u: any) => u.id === userId)?.username}
                   </Text>
                   <Text key={userId}>
-                    ${split.value} ({split.percent}%)
+                    ${splitObj.value} ({splitObj.percent}%)
                   </Text>
                 </View>
-              )
-            )}
+              );
+            })}
           </Animated.View>
         )}
       </View>

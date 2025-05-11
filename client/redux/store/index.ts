@@ -4,6 +4,7 @@ import createTransactionReducer from './createTransactionSlice';
 import transactionFormReducer from './transactionFormSlice';
 import userReducer from './userSlice';
 import splitReducer from './splitSlice';
+import transactionReducer from './transactionSlice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     transactionForm: transactionFormReducer,
     user: userReducer,
     splits: splitReducer,
+    transactions: transactionReducer,
   },
 });
 

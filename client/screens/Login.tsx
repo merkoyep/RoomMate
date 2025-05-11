@@ -31,6 +31,7 @@ const Login = () => {
   });
 
   const handleLogin = async () => {
+    console.log('Login button pressed');
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
@@ -56,7 +57,10 @@ const Login = () => {
         style={styles.input}
         placeholder='Email'
         value={email}
-        onChangeText={setEmail}
+        onChangeText={(text) => {
+          console.log('Email input changed:', text);
+          setEmail(text);
+        }}
         autoCapitalize='none'
         keyboardType='email-address'
       />
@@ -64,7 +68,10 @@ const Login = () => {
         style={styles.input}
         placeholder='Password'
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(text) => {
+          console.log('Password input changed:', text);
+          setPassword(text);
+        }}
         secureTextEntry
       />
       <TouchableOpacity
