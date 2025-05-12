@@ -1,3 +1,4 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator } from 'react-native';
 import Dashboard from './screens/Dashboard';
@@ -11,6 +12,29 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser, setToken } from './redux/store/userSlice';
 import { getUserData } from './utils/storage';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import TransactionDetails from './screens/TransactionDetails';
+import { Transaction } from './components/Transactions/CreateTransaction/CreateTransactionFormComponent';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+interface Split {
+  userId: string;
+  percent: number;
+  value: number;
+}
+
+interface TransactionWithSplits extends Omit<Transaction, 'splits'> {
+  splits: Split[];
+}
+
+type RootStackParamList = {
+  Dashboard: undefined;
+  Login: undefined;
+  TransactionDetails: { transaction: TransactionWithSplits };
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppContent = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -44,22 +68,44 @@ const AppContent = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar style='auto' />
-      {currentUser ? <Dashboard /> : <Login />}
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {currentUser ? (
+          <>
+            <Stack.Screen
+              name='Dashboard'
+              component={Dashboard}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='TransactionDetails'
+              component={TransactionDetails}
+              options={{ title: 'Transaction Details' }}
+            />
+          </>
+        ) : (
+          <Stack.Screen
+            name='Login'
+            component={Login}
+            options={{ headerShown: false }}
+          />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
-export default function App() {
+const App = () => {
   return (
-    <ApolloProvider client={client}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
-        <AppContent />
+        <ApolloProvider client={client}>
+          <AppContent />
+        </ApolloProvider>
       </Provider>
-    </ApolloProvider>
+    </GestureHandlerRootView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -71,3 +117,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default App;

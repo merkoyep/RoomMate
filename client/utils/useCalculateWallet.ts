@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import { Transaction } from '../components/Transactions/CreateTransaction/CreateTransactionFormComponent';
 
 export const useCalculateWallet = () => {
   const currentUser = useSelector((state: any) => state.user.currentUser);
@@ -7,40 +8,29 @@ export const useCalculateWallet = () => {
   );
 
   const calculateWallet = () => {
-    if (!currentUser || !transactions) return 0;
+    let total = 0;
+    transactions.forEach((transaction: Transaction) => {
+      const userId = currentUser?.id;
+      const split = transaction.splits.find((split) => split.userId === userId);
+      const splitValue = Number(split?.value) || 0;
+      const amount = Number(transaction.amount);
 
-    const wallet = transactions.reduce((acc: number, transaction: any) => {
-      const userSplit = transaction.splits.find(
-        (split: any) => split.userId === currentUser.id
+      const secondSplit = transaction.splits.find(
+        (split) => split.userId !== userId
       );
+      const secondSplitValue = Number(secondSplit?.value) || 0;
 
-      if (!userSplit) {
-        console.log('No split found for user in transaction:', transaction.id);
-        return acc;
+      if (transaction.type === 'Expense') {
+        if (transaction.paidBy.id === userId) {
+          total += secondSplitValue;
+        } else {
+          total += splitValue;
+        }
+      } else {
+        total += transaction.paidBy.id === userId ? amount : -amount;
       }
-
-      const splitValue = Number(userSplit.value) || 0;
-      const transactionAmount = Number(transaction.amount) || 0;
-
-      switch (true) {
-        case transaction.type === 'Expense' &&
-          transaction.paidBy.id === currentUser.id:
-          const owed = transactionAmount - splitValue;
-          return acc + owed;
-        case transaction.type === 'Expense' &&
-          transaction.paidBy.id !== currentUser.id:
-          return acc - splitValue;
-        case transaction.type === 'Payment' &&
-          transaction.paidBy.id === currentUser.id:
-          return acc + transactionAmount;
-        case transaction.type === 'Payment' &&
-          transaction.paidBy.id !== currentUser.id:
-          return acc - transactionAmount;
-        default:
-          return acc;
-      }
-    }, 0);
-    return wallet;
+    });
+    return total;
   };
 
   return { calculateWallet };

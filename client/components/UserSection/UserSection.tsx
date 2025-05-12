@@ -8,7 +8,7 @@ const UserSection = () => {
   const wallet = calculateWallet();
 
   return (
-    <View className='flex-row justify-between items-center p-4 w-full h-24 border-2 border-orange-500'>
+    <View className='flex-row justify-between items-center px-4 w-full h-20'>
       <View className='flex-col items-start gap-1'>
         <Text className='text-2xl'>
           {currentUser?.username || 'Loading...'}

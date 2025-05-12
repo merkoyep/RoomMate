@@ -4,6 +4,7 @@ import UserSection from '../components/UserSection/UserSection';
 import BottomBar from '../components/BottomBar';
 import { useSelector, useDispatch } from 'react-redux';
 import CreateTransactionModal from '../components/Transactions/CreateTransaction/CreateTransactionModal';
+import ReadTransactionModal from '../components/Transactions/ReadTransaction/ReadTransactionModal';
 import { hideModal } from '../redux/store/modalSlice';
 import { useGetTransactions } from '../components/Transactions/TransactionContainer/useGetTransactions';
 import { setTransactions } from '../redux/store/transactionSlice';
@@ -27,7 +28,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#f3f4f6' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
@@ -39,7 +40,7 @@ const Dashboard = () => {
 
   if (error) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#f3f4f6' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
@@ -50,13 +51,16 @@ const Dashboard = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f3f4f6' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
       <View style={{ flex: 1, flexDirection: 'column' }}>
         <UserSection />
         <TransactionContainer />
       </View>
       {modalType === 'createTransaction' && (
         <CreateTransactionModal onClose={handleCloseModal} />
+      )}
+      {modalType === 'readTransaction' && (
+        <ReadTransactionModal onClose={handleCloseModal} />
       )}
       <BottomBar />
     </SafeAreaView>

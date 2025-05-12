@@ -286,7 +286,49 @@ const resolvers = {
         throw new Error(error.message || 'Error creating category');
       }
     },
+    deleteTransaction: async (_, { id }) => {
+      try {
+        const transaction = await Transaction.findById(id)
+          .populate('paidBy')
+          .populate('user')
+          .populate('splits.userId');
 
+        if (!transaction) {
+          throw new Error('Transaction not found');
+        }
+
+        const transactionObj = transaction.toObject();
+        await Transaction.findByIdAndDelete(id);
+
+        return {
+          id: transactionObj._id.toString(),
+          title: transactionObj.title,
+          amount: transactionObj.amount,
+          type: transactionObj.type,
+          category: transactionObj.category,
+          paidBy: {
+            id: transactionObj.paidBy._id.toString(),
+            username: transactionObj.paidBy.username,
+            email: transactionObj.paidBy.email,
+          },
+          splits: transactionObj.splits.map((split) => ({
+            userId: split.userId._id.toString(),
+            percent: split.percent,
+            value: split.value,
+          })),
+          description: transactionObj.description,
+          createdAt: transactionObj.createdAt.toISOString(),
+          user: {
+            id: transactionObj.user._id.toString(),
+            username: transactionObj.user.username,
+            email: transactionObj.user.email,
+          },
+        };
+      } catch (error) {
+        console.error('Delete Transaction Error:', error);
+        throw new Error(error.message || 'Error deleting transaction');
+      }
+    },
     login: async (_, { email, password }) => {
       const user = await User.findOne({ email }).select('+password');
       if (!user) {

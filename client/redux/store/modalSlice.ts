@@ -1,21 +1,39 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Transaction } from '../../components/Transactions/CreateTransaction/CreateTransactionFormComponent';
 
-const initialState = {
+interface ModalState {
+  isModalOpen: boolean;
+  modalType: 'createTransaction' | 'readTransaction' | null;
+  selectedTransaction: Transaction | null;
+}
+
+const initialState: ModalState = {
   isModalOpen: false,
   modalType: null,
+  selectedTransaction: null,
 };
 
 const modalSlice = createSlice({
   name: 'modal',
   initialState,
   reducers: {
-    showModal: (state, action) => {
+    showModal: (
+      state,
+      action: PayloadAction<{
+        type: 'createTransaction' | 'readTransaction';
+        selectedTransaction?: Transaction;
+      }>
+    ) => {
       state.isModalOpen = true;
-      state.modalType = action.payload;
+      state.modalType = action.payload.type;
+      if (action.payload.selectedTransaction) {
+        state.selectedTransaction = action.payload.selectedTransaction;
+      }
     },
     hideModal: (state) => {
       state.isModalOpen = false;
       state.modalType = null;
+      state.selectedTransaction = null;
     },
   },
 });

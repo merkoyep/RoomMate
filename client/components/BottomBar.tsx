@@ -20,7 +20,9 @@ const BottomBar = () => {
 
   return (
     <View className='flex-row justify-between gap-2 items-center p-4 bg-white'>
-      <Pressable onPress={() => dispatch(showModal('createTransaction'))}>
+      <Pressable
+        onPress={() => dispatch(showModal({ type: 'createTransaction' }))}
+      >
         <Ionicons name='add-circle-outline' size={24} color='blue' />
       </Pressable>
       <Pressable onPress={() => {}}>

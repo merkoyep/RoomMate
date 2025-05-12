@@ -87,6 +87,7 @@ const typeDefs = gql`
       user: ID!
     ): Transaction
     createCategory(name: String!): Category
+    deleteTransaction(id: ID!): Transaction
   }
 `;
 

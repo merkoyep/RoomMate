@@ -25,7 +25,8 @@ interface User {
   username: string;
 }
 
-interface Split {
+export interface Split {
+  userId: string;
   percent: string;
   value: string;
 }
@@ -37,7 +38,7 @@ export type Transaction = {
   description: string;
   category: string;
   amount: string;
-  splits: { [key: string]: Split };
+  splits: Split[];
   paidBy: User;
   createdAt: string;
 };
