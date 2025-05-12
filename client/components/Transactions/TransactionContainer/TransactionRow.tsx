@@ -39,13 +39,21 @@ const TransactionRow = ({ transaction }: { transaction: Transaction }) => {
 
   const formatDate = (dateString: string) => {
     try {
+      if (!dateString) return 'No date';
+
       const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date string:', dateString);
+        return 'Invalid date';
+      }
+
       return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
       });
     } catch (error) {
+      console.error('Error formatting date:', error);
       return 'Invalid date';
     }
   };
@@ -89,7 +97,7 @@ const TransactionRow = ({ transaction }: { transaction: Transaction }) => {
       rightThreshold={40}
     >
       <Pressable
-        className='w-full h-20 border-b-2 border-gray-200 px-4 py-3 mb-2 rounded-lg pressed:bg-gray-100 bg-white'
+        className='w-full h-20 border-b-2 border-gray-200 py-3 pr-2 mb-2 rounded-lg pressed:bg-gray-100 bg-white'
         onPress={onPress}
       >
         <View className='flex-row justify-between items-center h-full'>
@@ -113,9 +121,9 @@ const TransactionRow = ({ transaction }: { transaction: Transaction }) => {
                 {transaction.paidBy.username}
               </Text>
             </View>
-            <View className='flex-row items-center justify-start pb-3'>
+            <View className='flex-row items-center justify-start'>
               <Text className='text-sm text-gray-600'>
-                {formatDate(transaction.createdAt)}
+                {formatDate(transaction.transactionDate)}
               </Text>
             </View>
           </View>
@@ -135,12 +143,18 @@ const TransactionRow = ({ transaction }: { transaction: Transaction }) => {
                   : `+ $${netValue.toFixed(2)}`}
               </Text>
             )}
-            {transaction.type === 'Payment' &&
-              netValue.toString().substring(0, 1) === '-' && (
-                <Text className='text-sm text-red-500'>
-                  - ${Math.abs(netValue).toFixed(2)}
-                </Text>
-              )}
+            {transaction.type === 'Payment' && (
+              <Text
+                className='text-sm'
+                style={{
+                  color: netValue < 0 ? 'red' : 'green',
+                }}
+              >
+                {netValue < 0
+                  ? `-$${Math.abs(netValue).toFixed(2)}`
+                  : `+ $${netValue.toFixed(2)}`}
+              </Text>
+            )}
           </View>
         </View>
       </Pressable>

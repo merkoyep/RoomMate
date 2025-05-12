@@ -59,8 +59,22 @@ async function startServer() {
   server.applyMiddleware({ app });
 
   const PORT = process.env.PORT || 4000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    const networkInterfaces = require('os').networkInterfaces();
+    const addresses = [];
+    for (const k in networkInterfaces) {
+      for (const k2 in networkInterfaces[k]) {
+        const address = networkInterfaces[k][k2];
+        if (address.family === 'IPv4' && !address.internal) {
+          addresses.push(address.address);
+        }
+      }
+    }
+    console.log(`🚀 Server running at:`);
+    console.log(`   Local: http://localhost:${PORT}`);
+    addresses.forEach((ip) => {
+      console.log(`   Network: http://${ip}:${PORT}`);
+    });
     console.log(
       `🚀 GraphQL endpoint at http://localhost:${PORT}${server.graphqlPath}`
     );

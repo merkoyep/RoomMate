@@ -1,4 +1,4 @@
-import { Modal, View, StyleSheet } from 'react-native';
+import { Modal, View, StyleSheet, ScrollView } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { resetStep } from '../../../redux/store/createTransactionSlice';
 import CreateTransactionNavbar from './CreateTransactionNavbarContainer';
@@ -6,11 +6,13 @@ import CreateTransactionFormComponent from './CreateTransactionFormComponent';
 import { clearTransactionForm } from '../../../redux/store/transactionFormSlice';
 import { useSubmitTransaction } from './useSubmitTransaction';
 import { triggerRefresh } from '../../../redux/store/transactionSlice';
+import { useGetTransactions } from '../TransactionContainer/useGetTransactions';
 
 const CreateTransactionModal = ({ onClose }: { onClose: () => void }) => {
   const step = useSelector((state: any) => state.createTransaction.step);
   const dispatch = useDispatch();
   const { submitTransaction } = useSubmitTransaction();
+  const { refetch } = useGetTransactions();
 
   const handleClose = () => {
     dispatch(resetStep());
@@ -21,6 +23,7 @@ const CreateTransactionModal = ({ onClose }: { onClose: () => void }) => {
   const handleSubmit = async () => {
     try {
       await submitTransaction();
+      await refetch();
       dispatch(triggerRefresh());
       handleClose();
     } catch (error) {
@@ -37,7 +40,9 @@ const CreateTransactionModal = ({ onClose }: { onClose: () => void }) => {
             handleClose={handleClose}
             handleSubmit={handleSubmit}
           />
-          <CreateTransactionFormComponent step={step} />
+          <ScrollView style={styles.scrollView}>
+            <CreateTransactionFormComponent step={step} />
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -54,12 +59,13 @@ const styles = StyleSheet.create({
   modalContent: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'flex-start',
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 20,
     width: '90%',
-    height: '75%',
+    maxHeight: '90%',
+  },
+  scrollView: {
+    padding: 20,
   },
 });
 

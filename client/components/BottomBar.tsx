@@ -25,9 +25,6 @@ const BottomBar = () => {
       >
         <Ionicons name='add-circle-outline' size={24} color='blue' />
       </Pressable>
-      <Pressable onPress={() => {}}>
-        <Feather name='search' size={24} color='blue' />
-      </Pressable>
       <Pressable onPress={handleLogout}>
         <Feather name='log-out' size={24} color='blue' />
       </Pressable>

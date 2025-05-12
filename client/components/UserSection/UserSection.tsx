@@ -13,7 +13,18 @@ const UserSection = () => {
         <Text className='text-2xl'>
           {currentUser?.username || 'Loading...'}
         </Text>
-        <Text className='text-sm text-gray-800'>Balance: ${wallet}</Text>
+        {wallet > 0 ? (
+          <Text className='text-sm text-gray-800'>
+            Balance: ${wallet.toFixed(2)}
+          </Text>
+        ) : (
+          <View className='flex-row items-center'>
+            <Text className='text-sm text-gray-800'>Balance: </Text>
+            <Text className='text-sm text-red-500'>
+              - ${(wallet * -1).toFixed(2)}
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );

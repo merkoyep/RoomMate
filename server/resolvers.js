@@ -29,12 +29,11 @@ const resolvers = {
         const transactions = await Transaction.find()
           .populate('paidBy')
           .populate('user')
-          .populate('splits.userId');
+          .populate('splits.userId')
+          .sort({ transactionDate: -1 });
 
-        // Filter out invalid transactions and map valid ones
         return transactions
           .filter((transaction) => {
-            // Check if transaction has all required references
             if (!transaction.paidBy || !transaction.user) {
               console.warn(
                 `Skipping transaction ${transaction._id} due to missing references`
@@ -46,7 +45,6 @@ const resolvers = {
           .map((transaction) => {
             const transactionObj = transaction.toObject();
 
-            // Process splits and ensure each split has a valid user
             const validSplits = transactionObj.splits
               .filter((split) => {
                 if (!split.userId) {
@@ -68,8 +66,7 @@ const resolvers = {
                 },
               }));
 
-            // Return formatted transaction with all required fields
-            return {
+            const result = {
               ...transactionObj,
               id: transactionObj._id.toString(),
               paidBy: {
@@ -84,7 +81,10 @@ const resolvers = {
               },
               splits: validSplits,
               createdAt: transactionObj.createdAt.toISOString(),
+              transactionDate: transactionObj.transactionDate.toISOString(),
             };
+
+            return result;
           });
       } catch (error) {
         console.error('Error in getTransactions:', error);
@@ -140,20 +140,22 @@ const resolvers = {
     },
     createTransaction: async (
       _,
-      { title, amount, type, category, paidBy, splits, description, user }
+      {
+        title,
+        amount,
+        type,
+        category,
+        paidBy,
+        splits,
+        description,
+        transactionDate,
+        user,
+      }
     ) => {
       try {
-        console.log('Received transaction type:', type);
-        console.log('Type length:', type.length);
-        console.log(
-          'Type char codes:',
-          Array.from(type).map((c) => c.charCodeAt(0))
-        );
-        // Convert string IDs to ObjectIds
         const paidById = new mongoose.Types.ObjectId(paidBy);
         const userId = new mongoose.Types.ObjectId(user);
 
-        // Validate that both users exist
         const [paidByUser, transactionUser] = await Promise.all([
           User.findById(paidById),
           User.findById(userId),
@@ -166,9 +168,7 @@ const resolvers = {
           throw new Error('Transaction user not found');
         }
 
-        // Validate that all split users exist
         const splitUserIds = splits.map((split) => {
-          // If userId is an object (from populated data), use its _id
           const userId =
             typeof split.userId === 'object' ? split.userId._id : split.userId;
           return new mongoose.Types.ObjectId(userId);
@@ -187,7 +187,6 @@ const resolvers = {
           category,
           paidBy: paidById,
           splits: splits.map((split) => {
-            // If userId is an object (from populated data), use its _id
             const userId =
               typeof split.userId === 'object'
                 ? split.userId._id
@@ -200,14 +199,11 @@ const resolvers = {
           }),
           description,
           user: userId,
-          createdAt: new Date().toISOString(),
+          transactionDate: transactionDate || new Date(),
+          createdAt: new Date(),
         });
-
-        console.log('Creating transaction with splits:', splits);
-
         const savedTransaction = await transaction.save();
 
-        // Populate all user references
         const populatedTransaction = await Transaction.findById(
           savedTransaction._id
         )
@@ -219,10 +215,8 @@ const resolvers = {
           throw new Error('Failed to save transaction');
         }
 
-        // Convert to plain object and ensure all required fields are present
         const transactionObj = populatedTransaction.toObject();
 
-        // Format the response to match GraphQL schema
         return {
           ...transactionObj,
           id: transactionObj._id.toString(),

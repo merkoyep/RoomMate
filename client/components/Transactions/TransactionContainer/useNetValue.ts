@@ -35,6 +35,10 @@ export const useNetValue = ({
       return splitValue * -1;
     }
   } else {
-    return transaction.paidBy.id === userId ? amount : -amount;
+    if (transaction.paidBy.id === userId) {
+      return -amount;
+    } else {
+      return amount;
+    }
   }
 };

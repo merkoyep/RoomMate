@@ -20,7 +20,7 @@ const ReadTransactionModal = ({ onClose }: { onClose: () => void }) => {
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <View className='flex-shrink-0 flex-row justify-between h-10 mb-4'>
-            <View className='flex-1 flex-row justify-between items-center h-10'>
+            <View className='flex-1 flex-row justify-between items-center'>
               <Pressable
                 onPress={handleClose}
                 style={({ pressed }) => ({
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     width: '90%',
-    height: '75%',
+    maxHeight: '90%',
   },
 });
 

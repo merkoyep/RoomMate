@@ -31,7 +31,6 @@ const Login = () => {
   });
 
   const handleLogin = async () => {
-    console.log('Login button pressed');
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
@@ -58,7 +57,6 @@ const Login = () => {
         placeholder='Email'
         value={email}
         onChangeText={(text) => {
-          console.log('Email input changed:', text);
           setEmail(text);
         }}
         autoCapitalize='none'
@@ -69,7 +67,6 @@ const Login = () => {
         placeholder='Password'
         value={password}
         onChangeText={(text) => {
-          console.log('Password input changed:', text);
           setPassword(text);
         }}
         secureTextEntry

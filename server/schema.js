@@ -37,6 +37,7 @@ const typeDefs = gql`
     paidBy: User!
     splits: [Split!]!
     description: String
+    transactionDate: String!
     createdAt: String!
     user: User!
   }
@@ -71,7 +72,7 @@ const typeDefs = gql`
       paidBy: String!
       splits: [SplitInput!]!
       description: String
-      date: String
+      transactionDate: String
       user: ID!
     ): Transaction
     updateTransaction(
@@ -83,7 +84,7 @@ const typeDefs = gql`
       paidBy: String
       splits: [SplitInput!]!
       description: String
-      date: String
+      transactionDate: String
       user: ID!
     ): Transaction
     createCategory(name: String!): Category

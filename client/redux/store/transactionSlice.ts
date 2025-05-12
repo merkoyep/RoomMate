@@ -15,6 +15,7 @@ interface Transaction {
     percent: number;
     value: number;
   }[];
+  transactionDate: string;
   createdAt: string;
 }
 
@@ -28,15 +29,28 @@ const initialState: TransactionState = {
   refreshTrigger: 0,
 };
 
+const sortTransactions = (transactions: Transaction[]) => {
+  const sorted = [...transactions].sort((a, b) => {
+    const dateA = new Date(a.transactionDate).getTime();
+    const dateB = new Date(b.transactionDate).getTime();
+    return dateB - dateA;
+  });
+
+  return sorted;
+};
+
 const transactionSlice = createSlice({
   name: 'transactions',
   initialState,
   reducers: {
     setTransactions: (state, action: PayloadAction<Transaction[]>) => {
-      state.transactions = action.payload;
+      state.transactions = sortTransactions(action.payload);
     },
     addTransaction: (state, action: PayloadAction<Transaction>) => {
-      state.transactions.push(action.payload);
+      state.transactions = sortTransactions([
+        ...state.transactions,
+        action.payload,
+      ]);
     },
     updateTransaction: (state, action: PayloadAction<Transaction>) => {
       const index = state.transactions.findIndex(
@@ -44,6 +58,7 @@ const transactionSlice = createSlice({
       );
       if (index !== -1) {
         state.transactions[index] = action.payload;
+        state.transactions = sortTransactions(state.transactions);
       }
     },
     deleteTransaction: (state, action: PayloadAction<string>) => {
@@ -64,4 +79,5 @@ export const {
   deleteTransaction,
   triggerRefresh,
 } = transactionSlice.actions;
+
 export default transactionSlice.reducer;

@@ -13,6 +13,7 @@ export interface TransactionFormSliceState {
   paidBy: string;
   splits: { [userId: string]: Split };
   description: string;
+  transactionDate: string;
   createdAt: string;
 }
 
@@ -24,6 +25,7 @@ const initialState: TransactionFormSliceState = {
   paidBy: '',
   splits: {},
   description: '',
+  transactionDate: new Date().toISOString(),
   createdAt: '',
 };
 

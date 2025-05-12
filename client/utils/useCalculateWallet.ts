@@ -24,7 +24,7 @@ export const useCalculateWallet = () => {
         if (transaction.paidBy.id === userId) {
           total += secondSplitValue;
         } else {
-          total += splitValue;
+          total -= splitValue;
         }
       } else {
         total += transaction.paidBy.id === userId ? amount : -amount;

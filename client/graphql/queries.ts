@@ -36,6 +36,7 @@ export const GET_TRANSACTIONS = gql`
         percent
         value
       }
+      transactionDate
       createdAt
     }
   }

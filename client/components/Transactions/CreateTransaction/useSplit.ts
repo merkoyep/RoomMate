@@ -16,7 +16,6 @@ export const useSplit = () => {
 
   const convertSplitsToArray = (): SplitInput[] => {
     const splits = transactionForm.splits as { [key: string]: Split };
-    console.log('Raw splits from form:', splits);
     return Object.entries(splits)
       .filter(([_, split]) => split.percent && split.value)
       .map(([userId, split]) => {

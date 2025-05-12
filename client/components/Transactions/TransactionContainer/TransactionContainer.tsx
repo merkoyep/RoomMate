@@ -1,12 +1,27 @@
-import { View, ScrollView, Text } from 'react-native';
+import { View, ScrollView, Text, RefreshControl } from 'react-native';
 import TransactionRow from './TransactionRow';
 import { Transaction } from '../CreateTransaction/CreateTransactionFormComponent';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useState } from 'react';
+import { useGetTransactions } from './useGetTransactions';
 
 const TransactionContainer = () => {
+  const [refreshing, setRefreshing] = useState(false);
+  const { refetch } = useGetTransactions();
   const transactions = useSelector(
     (state: any) => state.transactions.transactions
   );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } catch (error) {
+      console.error('Error refreshing:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   if (!transactions || transactions.length === 0) {
     return (
@@ -18,7 +33,17 @@ const TransactionContainer = () => {
 
   return (
     <View className='flex-1 bg-white'>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
+      <ScrollView
+        contentContainerStyle={{ padding: 16 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#3b82f6']} // This matches your blue color scheme
+            tintColor='#3b82f6'
+          />
+        }
+      >
         {transactions.map((transaction: Transaction) => (
           <TransactionRow key={transaction.id} transaction={transaction} />
         ))}

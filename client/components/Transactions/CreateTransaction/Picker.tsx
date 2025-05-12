@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Modal } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, Pressable, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 interface FormPickerProps {
@@ -41,21 +40,29 @@ const FormPicker = ({
                 <Ionicons name='close' size={24} color='#6B7280' />
               </Pressable>
             </View>
-            <View className='px-4'>
-              <Picker
-                selectedValue={value}
-                onValueChange={(itemValue) => {
-                  onValueChange(itemValue);
+            <ScrollView className='max-h-[300px]'>
+              <Pressable
+                onPress={() => {
+                  onValueChange('');
                   setModalVisible(false);
                 }}
-                style={{ height: 200 }}
+                className='p-4 border-b border-gray-200'
               >
-                <Picker.Item label={placeholder} value='' />
-                {items.map((item) => (
-                  <Picker.Item key={item} label={item} value={item} />
-                ))}
-              </Picker>
-            </View>
+                <Text className='text-base'>{placeholder}</Text>
+              </Pressable>
+              {items.map((item) => (
+                <Pressable
+                  key={item}
+                  onPress={() => {
+                    onValueChange(item);
+                    setModalVisible(false);
+                  }}
+                  className='p-4 border-b border-gray-200'
+                >
+                  <Text className='text-base'>{item}</Text>
+                </Pressable>
+              ))}
+            </ScrollView>
           </View>
         </View>
       </Modal>

@@ -6,7 +6,6 @@ import {
   nextStep,
   prevStep,
 } from '../../../redux/store/createTransactionSlice';
-import Ionicons from '@expo/vector-icons/build/Ionicons';
 
 const CreateTransactionNavbar = ({
   step,
@@ -21,7 +20,7 @@ const CreateTransactionNavbar = ({
   const BLUE = '#3B82F6';
 
   return (
-    <View className='flex-shrink-0 flex-row justify-between h-10'>
+    <View className='flex-shrink-0 flex-row justify-between h-10 p-4'>
       {step === 0 && (
         <View className='flex-1 flex-row justify-between items-center h-10'>
           <Pressable

@@ -9,6 +9,7 @@ export const CREATE_TRANSACTION = gql`
     $paidBy: String!
     $splits: [SplitInput!]!
     $description: String
+    $transactionDate: String
     $user: ID!
   ) {
     createTransaction(
@@ -19,6 +20,7 @@ export const CREATE_TRANSACTION = gql`
       paidBy: $paidBy
       splits: $splits
       description: $description
+      transactionDate: $transactionDate
       user: $user
     ) {
       id
@@ -36,6 +38,7 @@ export const CREATE_TRANSACTION = gql`
         value
       }
       description
+      transactionDate
       createdAt
       user {
         id
