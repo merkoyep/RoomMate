@@ -9,11 +9,9 @@ const resolvers = require('./resolvers');
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection with retry logic
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(
@@ -32,12 +30,10 @@ const connectDB = async () => {
   }
 };
 
-// Apollo Server Setup
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req }) => {
-    // Add authentication context here if needed
     return { req };
   },
   formatError: (error) => {
@@ -52,7 +48,6 @@ const server = new ApolloServer({
   },
 });
 
-// Start Server
 async function startServer() {
   await connectDB();
   await server.start();

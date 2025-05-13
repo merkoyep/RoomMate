@@ -15,7 +15,6 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const { data, loading, error, refetch } = useGetTransactions();
 
-  // Load transactions into Redux state
   useEffect(() => {
     if (data?.getTransactions) {
       dispatch(setTransactions(data.getTransactions));
