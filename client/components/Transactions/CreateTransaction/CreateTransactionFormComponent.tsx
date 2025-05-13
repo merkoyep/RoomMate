@@ -23,6 +23,7 @@ import { useQuery } from '@apollo/client';
 import { GET_CATEGORIES, GET_USERS } from '../../../graphql/queries';
 import FormPicker from './Picker';
 import { Calendar } from 'react-native-calendars';
+import { Ionicons } from '@expo/vector-icons';
 
 interface User {
   id: string;
@@ -250,6 +251,40 @@ const CreateTransactionFormComponent = ({ step }: { step: number }) => {
                     : 'Select a date'}
                 </Text>
               </Pressable>
+              <Modal
+                visible={showCalendar}
+                transparent={true}
+                animationType='slide'
+                onRequestClose={() => setShowCalendar(false)}
+              >
+                <View className='flex-1 justify-end bg-black/50'>
+                  <View className='bg-white rounded-t-xl pb-8'>
+                    <View className='flex flex-row justify-between items-center p-4 border-b border-gray-200'>
+                      <Text className='text-lg font-semibold'>Select Date</Text>
+                      <Pressable onPress={() => setShowCalendar(false)}>
+                        <Ionicons name='close' size={24} color='#6B7280' />
+                      </Pressable>
+                    </View>
+                    <Calendar
+                      onDayPress={handleDateSelect}
+                      markedDates={{
+                        [transactionForm.transactionDate
+                          ? new Date(transactionForm.transactionDate)
+                              .toISOString()
+                              .split('T')[0]
+                          : '']: {
+                          selected: true,
+                          selectedColor: '#3B82F6',
+                        },
+                      }}
+                      theme={{
+                        todayTextColor: '#3B82F6',
+                        arrowColor: '#3B82F6',
+                      }}
+                    />
+                  </View>
+                </View>
+              </Modal>
             </View>
             <View className='flex flex-col'>
               <Text className='text-sm text-gray-500'>Amount</Text>
@@ -267,7 +302,7 @@ const CreateTransactionFormComponent = ({ step }: { step: number }) => {
                 />
               </View>
             </View>
-            {transactionForm.type === 'expense' && (
+            {transactionForm.type === 'Expense' && (
               <View className='flex flex-col'>
                 <Text className='text-sm text-gray-500'>Split</Text>
                 <View className='flex flex-col gap-1'>
